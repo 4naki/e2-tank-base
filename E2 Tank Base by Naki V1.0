@@ -8,7 +8,6 @@
 if(dupefinished()){reset()}
 if(first()){
     Base=entity()
-    Base:setAlpha(255)
     Base:setMass(CarMass)
     Base:propDrag(0)
     noCollideAll(Base,0)
