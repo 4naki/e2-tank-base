@@ -1,20 +1,30 @@
-@name E2 Tank Base by Naki V1.0
-@inputs [Seat]:entity
+@name E2 Tank Base by Naki V2.0
+@inputs [Seat Ammo1 Ammo2 Ammo3]:entity
 @persist Base:entity Jump Inertia:angle [Rangers TractionMatOverwrites]:array Slide Steer
 @persist RPM Gear
-@outputs RPM Gear LTraction RTraction Slide
+@outputs RPM Gear LTraction RTraction Slide KMH
 @outputs SpeedTest Speed FBLR:vector2 FrontBack LeftRight
 @model models/sprops/rectangles/size_7/rect_144x192x3.mdl
 if(dupefinished()){reset()}
 if(first()){
     Base=entity()
+    Base:setAlpha(0)
     Base:setMass(CarMass)
     Base:propDrag(0)
     noCollideAll(Base,0)
     
     Inertia = shiftL(ang(Base:inertia()))
-    #_drift_missile
-    #include "E2_Tank_Base_by_Naki_V1.0_Config_-_Default" 
+    
+    holoCreate(1)
+    holoPos(1,Base:toWorld(vec(0,0,0)))
+    holoAng(1,Base:toWorld(ang(0,0,0)))
+    holoAlpha(1,0)
+    holoParent(1,Base)
+    Ammo1:parentTo(holoEntity(1))
+    Ammo2:parentTo(holoEntity(1))
+    Ammo3:parentTo(holoEntity(1))
+    
+    #include "E2_Tank_Base_by_Naki_V1.0_Config_-_T62A" 
     
     rangerHitEntities(1)
     
@@ -103,7 +113,9 @@ W=Driver:keyForward()|((A|D)*0.001*!SteeringWhileStill)
 S=Driver:keyBack()
 
 Space=Driver:keyJump()
-Fire=Driver:keyAttack1()
+
+Speed=TopSpeed*2.75
+
 Velocity=abs(Base:velL():setZ(0):length())/2.5/Speed*1.1/Gears*Gears
 SpeedTest=(abs((Base:velL():setZ(0):length())/Speed*1.1)/Gears)
 if(!S){
@@ -123,7 +135,7 @@ soundPitch("engine",125*clamp(RPM/MaxRPM,0.35,1.5))
 soundVolume("engine",0.6)
 
 Ground_Distance=((Rangers[1,ranger]:distance()+Rangers[2,ranger]:distance()+Rangers[3,ranger]:distance()+Rangers[4,ranger]:distance())/4)-(BasePlateHeightOffset+RangerHeightOffset)
-HeightAdj=Base:up()*(((32+(BasePlateHeightOffset*2))-(Ground_Distance))*SuspensionStrength)
+HeightAdj=Base:up()*(((20.9+(BasePlateHeightOffset*2))-(Ground_Distance))*SuspensionStrength)
 Slide+=(abs(Base:velL():y())*(0.015*(1+(Space*3)-0.25))*(TractionLoss/100)*(1-TractionTotalMult))*(1+(HP/300))+(15*Space)
 Slide-=(((11)*(TractionGain/100)*(1-TractionTotalMult))/(1+(HP/300)))+(10*((W+S)==0))
 Slide=clamp(Slide,TractionLossMin,TractionLossMax)
@@ -140,10 +152,10 @@ if(Driver){
 GearMult=0.7+(clamp((Gear/Gears),0,1)*0.3)
 RPMMult=(clamp((RPM/MaxRPM),0.25,1))
 DriveForceMult=GearMult*RPMMult
-
+Acceleration2=DriveForceMult*100
 Damp=((-Base:forward()*Damp2:x()*(BrakeStrength/100))+(Base:right()*Damp2:y()*(BrakeStrength/100))+(-Base:up()*Damp2:z()*(SuspensionDamp/4)))
 
-Dir=Base:forward()*(W-S)*((Speed*DriveForceMult)/(2-TractionTotalMult))*!Space
+Dir=Base:forward()*(W-S)*((Speed*(Acceleration2/100)*DriveForceMult)/(2-TractionTotalMult))*!Space
 Downhill=Base:forward()*Base:angles():pitch()*(2/(1+(clamp(W+S,0,1)*2)))*!Space
 
 Steer+=(100/2)*(A-D)
@@ -156,17 +168,17 @@ if(!A&!D){
 }
 Steer=clamp(Steer,-100,100)
 
-On_Ground=Ground_Distance<(GroundDistance/1)
+On_Ground=Ground_Distance<(GroundDistance)
 OverSteer=-27*(clamp(Base:velL():y()*0.1,-1,1)*(Slide/100)*(0.1+(W|S)))
 if(On_Ground){
     Base:propGravity(0)
     Base:applyForce((Downhill+Dir+HeightAdj+(Damp))*Base:mass()*0.5)
     Front=Rangers[1,ranger]:distance()+Rangers[2,ranger]:distance()
     Back=Rangers[3,ranger]:distance()+Rangers[4,ranger]:distance()
-    FrontBack=((Front-Back)*2.7)
+    FrontBack=((Front-Back)*2.5)-clamp(Base:velL():x()*0.1+((W-S)*0.3),-20,20)
     Left=Rangers[1,ranger]:distance()+Rangers[3,ranger]:distance()
     Right=Rangers[2,ranger]:distance()+Rangers[4,ranger]:distance()
-    LeftRight=((Left-Right)*1.7)
+    LeftRight=((Left-Right)*1.5)+clamp(Base:velL():y()*0.4,-20,20)
     FBLR=vec2(FrontBack*SuspensionStrength2:x(),LeftRight*SuspensionStrength2:y())
     if(Driver){
         if(Space){
@@ -181,12 +193,10 @@ if(On_Ground){
     }else{
         AngDamp=Base:angVel()*ang(4,5,3)
     }
-    Base:applyAngForce(((Base:toLocal(ang(clamp(FBLR:x(),-90,90),0,clamp(-FBLR:y(),-90,90))+ang((-25/(1+clamp(abs(Base:velL():x()*0.003),0,10))*(W-S)*!Space),
-    Base:angles():yaw()+(SteeringSpeed*clamp((Base:velL():x()*0.05)+(SteeringWhileStill*1000*(!S-S)),-1,1)*(A-D))+OverSteer,-clamp(Base:velL():y()*0.1,-25,25)))*4)-(AngDamp))*
+    Base:applyAngForce(((Base:toLocal(ang(clamp(FBLR:x(),-90,90),0,clamp(-FBLR:y(),-90,90))+ang((-1/(1+clamp(abs(Base:velL():x()*0.003),0,10))*(W-S)*!Space),
+    Base:angles():yaw()+(SteeringSpeed*clamp((Base:velL():x()*0.05)+(SteeringWhileStill*1000*(!S-S)),-1,1)*(A-D))+OverSteer,0))*4)-(AngDamp))*
     Base:mass()*10)
 }else{
     Base:propGravity(1)
 }
-
-
-
+KMH=toUnit( "km/h", Base:vel():length())
