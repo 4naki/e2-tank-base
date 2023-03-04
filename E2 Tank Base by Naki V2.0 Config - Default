@@ -1,13 +1,13 @@
-@name E2 Tank Base by Naki V1.0 Config - Default
+@name E2 Tank Base by Naki V2.0 Config - T62A
 @persist BasePlateHeightOffset RangerHeightOffset [WheelData PosData]:array
-@persist SuspensionStrength SuspensionStrength2:vector2 SuspensionDamp BrakeStrength HandbrakeStrength GroundDistance Speed
+@persist SuspensionStrength SuspensionStrength2:vector2 SuspensionDamp BrakeStrength HandbrakeStrength GroundDistance TopSpeed Acceleration
 @persist TractionLossMax TractionLossMin TractionGain TractionLoss
 @persist [StarterSound EngineSound]:string StarterTime SteeringSpeed
 @persist VisualSteeringAssistStrength SteeringSpeedHighSpeedLoss CarMass SteeringWhileStill HP
 @persist IdleRPM MaxRPM Gears
 if(first()){
     
-    CarMass=5000
+    CarMass=41000
     BasePlateHeightOffset = 0
     RangerHeightOffset = 10
     GroundDistance=60
@@ -24,18 +24,19 @@ if(first()){
     Gears=5
     
     SteeringWhileStill=1
-    HP=500
-    Speed=110
-    SteeringSpeed=40
+    HP=581
+    TopSpeed=55
+    Acceleration=18
+    SteeringSpeed=38
     
-    TractionLossMax=70
-    TractionLossMin=0
+    TractionLossMax=80
+    TractionLossMin=1
     
     TractionGain=350
-    TractionLoss=200
+    TractionLoss=350
     
-    BrakeStrength=180
-    HandbrakeStrength=100
+    BrakeStrength=120
+    HandbrakeStrength=90
     
     #Track Front End, Track Front Side Offset
     #Track Rear End, Track Rear Side Offset
