@@ -26,7 +26,7 @@ if(first()){
     SteeringWhileStill=1
     HP=581
     TopSpeed=55
-    Acceleration=18
+    Acceleration=11
     SteeringSpeed=38
     
     TractionLossMax=80
