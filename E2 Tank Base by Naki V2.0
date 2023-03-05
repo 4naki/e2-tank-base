@@ -24,7 +24,7 @@ if(first()){
     Ammo2:parentTo(holoEntity(1))
     Ammo3:parentTo(holoEntity(1))
     
-    #include "E2_Tank_Base_by_Naki_V1.0_Config_-_T62A" 
+    #include "E2_Tank_Base_by_Naki_V2.0_Config_-_T62A" 
     
     rangerHitEntities(1)
     
@@ -155,7 +155,7 @@ DriveForceMult=GearMult*RPMMult
 Acceleration2=DriveForceMult*100
 Damp=((-Base:forward()*Damp2:x()*(BrakeStrength/100))+(Base:right()*Damp2:y()*(BrakeStrength/100))+(-Base:up()*Damp2:z()*(SuspensionDamp/4)))
 
-Dir=Base:forward()*(W-S)*((Speed*(Acceleration2/100)*DriveForceMult)/(2-TractionTotalMult))*!Space
+Dir=Base:forward()*(W-S)*((Speed*0.6*(Acceleration2/100)*DriveForceMult)/(2-TractionTotalMult))*!Space
 Downhill=Base:forward()*Base:angles():pitch()*(2/(1+(clamp(W+S,0,1)*2)))*!Space
 
 Steer+=(100/2)*(A-D)
